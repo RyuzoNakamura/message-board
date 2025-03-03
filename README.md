@@ -1,66 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel で匿名掲示板をつくる <!-- omit in toc -->
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 目次 <!-- omit in toc -->
 
-## About Laravel
+- [1. このプロジェクトについて](#1-このプロジェクトについて)
+- [2. 環境](#2-環境)
+- [3. 構成](#3-構成)
+  - [3.1. モデル](#31-モデル)
+  - [3.2. ビュー](#32-ビュー)
+  - [3.3. コントローラ](#33-コントローラ)
+- [4. 環境構築](#4-環境構築)
+  - [4.1. 事前準備](#41-事前準備)
+- [5. プロジェクトのセットアップ](#5-プロジェクトのセットアップ)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 1. このプロジェクトについて
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+スレッドの作成、スレッドへのレスが可能な匿名掲示板です。
+ベンチマークサイト: [あにまん掲示板](https://bbs.animanch.com/board/4627358/)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 2. 環境
 
-## Learning Laravel
+Laravel Sail を使用しています。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+- Laravel: 12.0.1
+- PHP: 8.4.4
+- Composer: 2.8.6
+- MySPL: 8.0.32
+- redis: 7.4.2
+- Node.js: 22.14.0
+- NPM: 11.1.0
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 3. 構成
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3.1. モデル
 
-## Laravel Sponsors
+-   **Board**
+    -   各スレッド
+    -   id、タイトル、IP アドレス を所持
+-   **Post**
+    -   各レス
+    -   id、board_id、投稿者名、IP アドレス、本文、画像パス を所持
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Board と Post は 1 対多関係
 
-### Premium Partners
+### 3.2. ビュー
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+-   **Board.index**
+    -   スレッド一覧
+-   **Board.show**
+    -   スレッド
 
-## Contributing
+### 3.3. コントローラ
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   **BoardController**
+    -   index, store, show, destroy を提供
+-   **PostController**
+    -   store を提供
+-   **ImageController**
+    -   PostController の store 時に、画像の格納、パスの提供部分を担当
 
-## Code of Conduct
+## 4. 環境構築
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4.1. 事前準備
 
-## Security Vulnerabilities
+-   docker desktop のインストール
+-   wsl 等の linux 環境 が入っている
+    -   mac/linux についてはわからないです
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 5. プロジェクトのセットアップ
 
-## License
+1. プロジェクトを作りたい場所に`cd`
+2. 以下のコマンドを実行(コピペ Enter で動きます)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# リポジトリのクローン
+git clone https://github.com/RyuzoNakamura/message-board.git
+cd message-board
+
+# composerが入っているdockerコンテナをインストール
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v $(pwd):/var/www/html \
+    -w /var/www/html \
+    laravelsail/php84-composer:latest \
+    composer install --ignore-platform-reqs
+
+# .envファイルの準備
+cp .env.example .env
+
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail npm install
+./vendor/bin/sail shell
+chown -R sail:sail storage
+chmod -R 775 storage
+./vendor/bin/sail npm run dev
+```
+
+3.  http://localhost/ にアクセス
