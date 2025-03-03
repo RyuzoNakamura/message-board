@@ -72,7 +72,7 @@ Board と Post は 1 対多関係
 ## 5. プロジェクトのセットアップ
 
 1. プロジェクトを作りたい場所に`cd`
-2. 以下のコマンドを実行(コピペ Enter で動きます)
+2. 以下のコマンドを実行(一気に実行できないので、ところどころ区切っています)
 
 ```bash
 # リポジトリのクローン
@@ -93,11 +93,33 @@ cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan storage:link
 ./vendor/bin/sail npm install
+```
+
+3. コンテナ内のターミナルを起動
+
+```
 ./vendor/bin/sail shell
+```
+
+4. コンテナ内ターミナルで以下を実行
+
+```
 chown -R sail:sail storage
 chmod -R 775 storage
+```
+
+5. ターミナルを出る
+
+```
+exit
+```
+
+6. vite を起動
+
+```
 ./vendor/bin/sail npm run dev
 ```
 
-3.  http://localhost/ にアクセス
+7. http://localhost/ にアクセス
