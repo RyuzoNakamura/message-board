@@ -6,8 +6,8 @@ use App\Models\Board;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ImageController;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -31,7 +31,7 @@ class PostController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * スレに新規レスを投稿する
      */
     public function store(Request $request, Board $board)
     {
@@ -63,6 +63,35 @@ class PostController extends Controller
         $post->save();
 
         return redirect()->route('boards.show', $board);
+    }
+
+    private function storeSqlVer(Request $request, $boardId)
+    {
+        $validated = $request->validate([
+            'body' => 'required|string|max:1000',
+            'poster_name' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $postNumber = DB::select('SELECT COUNT(*) as count FROM posts WHERE board_id = ?', [$boardId])[0]->count + 1;
+
+        $post = DB::insert(
+            'INSERT INTO posts (board_id, poster_name, body, ip_address, image_path) VALUES(
+             ?, ?, ?, ?, ?)',
+            [
+                $boardId,
+                $validated['poster_name'] ?? Post::DEFAULT_POSTER_NAME,
+                $validated['body'],
+                $request->ip(),
+                $request->image_path
+            ]
+        );
+
+        if ($request->hasFile('image')) {
+            $imagePath = $this->imageController->store($request, $boardId, $postNumber);
+        }
+
+        return redirect()->route('boards.show', $boardId);
     }
 
     /**
