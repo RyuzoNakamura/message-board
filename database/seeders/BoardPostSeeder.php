@@ -28,9 +28,31 @@ class BoardPostSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->cleanupImageDirectory();
         $this->createBoardOrm();
     }
 
+    /**
+     * 画像ディレクトリをクリーンアップする
+     */
+    private function cleanupImageDirectory(): void
+    {
+        if (Storage::disk('public')->exists('images')) {
+            $directories = Storage::disk('public')->directories('images');
+            foreach ($directories as $directory) {
+                Storage::disk('public')->deleteDirectory($directory);
+                echo "ディレクトリ削除: " . $directory . "\n";
+            }
+            echo "storage/app/public/images下の全ディレクトリを削除しました。\n";
+        } else {
+            Storage::disk('public')->makeDirectory('images');
+            echo "storage/app/public/imagesディレクトリを作成しました。\n";
+        }
+    }
+
+    /**
+     * スレッドとレスを作成する
+     */
     private function createBoardOrm(): void
     {
         $faker = Faker::create('ja_JP');
@@ -95,6 +117,10 @@ class BoardPostSeeder extends Seeder
             }
         }
     }
+
+    /**
+     * SQL文を直接実行してスレッドとレスを作成する
+     */
     private function createBoardSql(): void
     {
         $faker = Faker::create('ja_JP');
