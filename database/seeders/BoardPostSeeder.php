@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Storage;
 class BoardPostSeeder extends Seeder
 {
     /**
+     * 画像のサンプルファイル名
+     * @var array
+     */
+    const sampleImages = [
+        'sample_1.png',
+        'sample_2.png',
+        'sample_3.jpg',
+        'sample_4.jpg',
+        'sample_5.jpg',
+    ];
+    /**
      * Run the database seeds.
      */
     public function run(): void
@@ -49,19 +60,28 @@ class BoardPostSeeder extends Seeder
                 $imagePath = null;
 
                 if ($hasImage) {
-                    // 画像パスを設定（データベースに保存するパス）
-                    $imagePath = 'storage/images/' . $boardId . '/' . $i . '.jpg';
-
                     // 保存先ディレクトリを作成
                     Storage::disk('public')->makeDirectory('images/' . $boardId);
 
                     // ランダムなサンプル画像を選択してコピー
-                    $sampleImageNumber = rand(1, 5);
-                    $sourcePath = public_path('dummy_images/sample_' . $sampleImageNumber . '.jpg');
-                    $destinationPath = storage_path('app/public/images/' . $boardId . '/' . $i . '.jpg');
+                    $sampleImageNumber = rand(0, count(self::sampleImages) - 1);
+                    $sampleImageName = self::sampleImages[$sampleImageNumber];
+
+                    $sourcePath = public_path('dummy_images/' . $sampleImageName);
+                    $extension = pathinfo($sourcePath, PATHINFO_EXTENSION);
+
+                    $destinationPath = storage_path('app/public/images/' . $boardId . '/' . $i . '.' . $extension);
+                    $imagePath = 'storage/images/' . $boardId . '/' . $i . '.' . $extension;
+
+                    // デバッグ情報
+                    echo "ソースパス: " . $sourcePath . " (存在: " . (file_exists($sourcePath) ? "はい" : "いいえ") . ")\n";
+                    echo "コピー先: " . $destinationPath . "\n";
 
                     if (file_exists($sourcePath)) {
-                        copy($sourcePath, $destinationPath);
+                        $result = copy($sourcePath, $destinationPath);
+                        echo "コピー結果: " . ($result ? "成功" : "失敗") . "\n";
+                    } else {
+                        echo "ソースファイルが存在しません\n";
                     }
                 }
 
@@ -108,13 +128,13 @@ class BoardPostSeeder extends Seeder
                 $imagePath = null;
 
                 if ($hasImage) {
-                    // 画像パスを「storage/images/スレID/レス番号.jpg」の形式で設定
-                    $imagePath = 'storage/images/' . $boardId . '/' . $i . '.jpg';
+                    // 画像パスを「storage/images/スレID/レス番号.png」の形式で設定
+                    $imagePath = 'storage/images/' . $boardId . '/' . $i . '.png';
 
                     // 実際のファイルシステムにディレクトリを作成
                     Storage::disk('public')->makeDirectory('images/' . $boardId);
 
-                    Storage::disk('public')->copy('dummy_images/sample.jpg', 'images/' . $boardId . '/' . $i . '.jpg');
+                    Storage::disk('public')->copy('dummy_images/sample.png', 'images/' . $boardId . '/' . $i . '.png');
                 }
 
                 DB::insert(
