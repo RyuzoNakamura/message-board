@@ -121,13 +121,24 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Board $board, $postId)
     {
+        $post = Post::findOrFail($postId);
+        // 存在しない場合は404エラー
+        if (!$post) {
+            abort(404);
+        }
+
         if ($post->image_path) {
             $this->imageController->destroy($post->image_path);
         }
         // $board = $post->board;
-        $post->delete();
+        $post->update([
+            'body' => '[削除されました]',
+            'poster_name' => Post::DEFAULT_POSTER_NAME,
+            'ip_address' => '[削除済み]',
+            'image_path' => null,
+        ]);
 
         // return redirect()->route('boards.show', $board);
         return redirect()->back();

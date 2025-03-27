@@ -13,7 +13,14 @@
                 <span>{{ $post->poster_name }}</span> {{-- 投稿者名(デフォルト: Post::DEFAULT_POSTER_NAME) --}}
                 <span>{{ $post->created_at->format('Y/m/d H:i:s') }}</span> {{-- 投稿日時 --}}
                 <button type="button" class="reply-button btn-small">返信</button>
-                <button type="button" class="like-button btn-small">いいね</button>
+                {{-- <button type="button" class="like-button btn-small">いいね</button> --}}
+                @if ($post->ip_address === Request::ip() || $board->ip_address === Request::ip())
+                    <form action="{{ route('boards.posts.destroy', [$board, $post]) }}" method="POST" class="delete-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="delete-button btn-small">削除</button>
+                    </form>
+                @endif
             </div>
             <div class="resbody">
                 <p>{!! nl2br(e($post->body)) !!}</p> {{-- 改行を<br>タグに変換 --}}
