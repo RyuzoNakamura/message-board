@@ -112,13 +112,13 @@ class BoardController extends Controller
      */
     public function show(Board $board)
     {
-        return $this->showSqlVer($board);
+        return $this->showOrmVer($board);
     }
 
     private function showOrmVer(Board $board)
     {
         $posts = $board->posts()
-            ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
             ->get();
 
         return view('boards.show', compact('board', 'posts'));

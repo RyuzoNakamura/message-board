@@ -9,13 +9,14 @@ Route::get('/', function () {
 });
 
 Route::resource('boards', BoardController::class)
-    ->only(['index', 'create', 'store', 'show', 'update', 'delete']);
+    ->only(['index', 'create', 'store', 'show', 'update', 'destroy']);
 
 Route::post('boards/{board}/posts', [PostController::class, 'store'])
     ->name('boards.posts.store');
 
 Route::delete('boards/{board}/posts/{post}', [PostController::class, 'destroy'])
-    ->name('boards.posts.destroy');
+    ->name('boards.posts.destroy')
+    ->where('post', '[0-9]+');
 
 Route::get('/img/{board_id}/{post_number}', 'ImageController@show')
     ->name('images.show');

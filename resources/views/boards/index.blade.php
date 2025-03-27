@@ -14,6 +14,13 @@
                 </a>
             </h2>
             <p>作成日時: {{ $board->created_at }}</p>
+            @if ($board->ip_address === Request::ip())
+                <form action="{{ route('boards.destroy', $board) }}" method="POST" class="delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="delete-button btn-small">削除</button>
+                </form>
+            @endif
         </div>
     @endforeach
 
