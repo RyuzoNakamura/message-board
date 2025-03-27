@@ -23,6 +23,7 @@ class BoardController extends Controller
     private function indexOrm()
     {
         $boards = Board::latest()
+            ->orderBy('id', 'desc')
             ->paginate(10);
 
         return view('boards.index', compact('boards'));
@@ -31,7 +32,7 @@ class BoardController extends Controller
     {
         $limit = 10;
         $offset = 0;
-        $boards = DB::select('SELECT * FROM boards ORDER BY created_at DESC LIMIT ? OFFSET ?', [$limit, $offset]);
+        $boards = DB::select('SELECT * FROM boards ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?', [$limit, $offset]);
 
         return view('boards.index', compact('boards'));
     }
