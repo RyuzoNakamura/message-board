@@ -167,12 +167,24 @@ class BoardController extends Controller
      */
     public function destroy(Board $board)
     {
-        $board->delete();
+        $this->destroySqlVer($board);
 
         return redirect()->route('boards.index');
     }
+    private function destroyOrmVer(Board $board)
+    {
+        $board->delete();
+    }
+    private function destroySqlVer(Board $board)
+    {
+        DB::delete('DELETE FROM boards WHERE id = ?', [$board->id]);
+    }
 
     public function activity(Request $request)
+    {
+        $this->activitySqlVer($request);
+    }
+    private function activityOrmVer(Request $request)
     {
         $ip = $request->ip();
         $boards = Board::where('ip_address', $ip)
@@ -181,6 +193,17 @@ class BoardController extends Controller
         $posts = Post::where('ip_address', $ip)
             ->orderBy('id', 'desc')
             ->paginate(10);
+
+        return view('activities.index', compact('posts', 'boards'));
+    }
+    private function activitySqlVer(Request $request)
+    {
+        $ip = $request->ip();
+        $boards = DB::select('SELECT * FROM boards WHERE ip_address = ? ORDER BY id DESC LIMIT 10', [$ip]);
+        $posts = DB::select('SELECT * FROM posts WHERE ip_address = ? ORDER BY id DESC LIMIT 20', [$ip]);
+
+        $boards = Board::hydrate($boards);
+        $posts = Post::hydrate($posts);
 
         return view('activities.index', compact('posts', 'boards'));
     }
