@@ -143,4 +143,28 @@ class PostController extends Controller
         // return redirect()->route('boards.show', $board);
         return redirect()->back();
     }
+
+    public function destroySqlVer(Board $board, $postId)
+    {
+        $post = Post::hydrate(DB::select('SELECT * FROM posts WHERE id = ?', [$postId]));
+        if (!$post) {
+            abort(404);
+        }
+        if ($post->image_path) {
+            $this->imageController->destroy($post->image_path);
+        }
+
+        DB::update(
+            'UPDATE posts SET body = ?, poster_name = ?, ip_address = ?, image_path = ? WHERE id = ?',
+            [
+                '[削除されました]',
+                Post::DEFAULT_POSTER_NAME,
+                '[削除済み]',
+                null,
+                $postId
+            ]
+        );
+
+        return redirect()->route('boards.show', $board->id);
+    }
 }
