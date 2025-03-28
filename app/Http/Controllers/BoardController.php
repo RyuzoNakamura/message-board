@@ -171,4 +171,17 @@ class BoardController extends Controller
 
         return redirect()->route('boards.index');
     }
+
+    public function activity(Request $request)
+    {
+        $ip = $request->ip();
+        $boards = Board::where('ip_address', $ip)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+        $posts = Post::where('ip_address', $ip)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return view('activities.index', compact('posts', 'boards'));
+    }
 }
