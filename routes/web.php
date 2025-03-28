@@ -20,3 +20,6 @@ Route::delete('boards/{board}/posts/{post}', [PostController::class, 'destroy'])
 
 Route::get('/img/{board_id}/{post_number}', 'ImageController@show')
     ->name('images.show');
+
+Route::get('/activity', [BoardController::class, 'activity'])
+    ->name('activities.index');
